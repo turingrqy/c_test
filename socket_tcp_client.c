@@ -8,6 +8,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <fcntl.h>
+#include <sys/epoll.h>
 #define DEFAULT_PORT 8888
 
 int make_socket_non_blocking (int sfd)
@@ -53,7 +54,11 @@ int main() {
         return -2;
     }
     make_socket_non_blocking(socket_fd);
-    while (1) {
+    int count;
+    char buf[20] = "hello from client!!!";
+    count = write(socket_fd,buf,20);
+    printf("send to server count=%d\n",count);
+    /*while (1) {
         int count;
         char buf[20] = "hello from client!!!";
         count = write(socket_fd,buf,20);
@@ -65,5 +70,38 @@ int main() {
             close (socket_fd);
         }
         sleep(3);
+    }*/
+    struct epoll_event event;
+    struct epoll_event *events;
+    int efd;
+    efd = epoll_create1 (0);
+    event.data.fd = socket_fd;
+    event.events = EPOLLIN|EPOLLET|EPOLLERR|EPOLLHUP;
+    int res = epoll_ctl (efd, EPOLL_CTL_ADD, socket_fd, &event);
+    if (res == -1)
+    {
+        printf("epoll_ctl error:%s(errno:%d)\n",strerror(errno),errno);
+        perror ("epoll_ctl");
+        abort ();
+    }
+    n = epoll_wait (efd, events, 64, -1);
+    if (n < 0) {
+        printf("epoll_wait error:%s(errno:%d)\n",strerror(errno),errno);
+        exit(0);
+    }
+    if (events[i].events & EPOLLERR) {
+        printf("fd = %d, catch EPOLLERR");
+        close (events[i].data.fd);
+        return;
+    }
+    if (events[i].events & EPOLLHUP) {
+        printf("fd = %d, catch EPOLLHUP");
+        close (events[i].data.fd);
+        return;
+    }
+    if (!(events[i].events & EPOLLIN)) {
+        printf("fd = %d, catch event not EPOLLIN event=%d",events[i].events);
+        close (events[i].data.fd);
+        return;
     }
 }
