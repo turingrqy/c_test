@@ -64,7 +64,8 @@ int main() {
     event.data.fd = socket_fd;
     event.events = EPOLLIN|EPOLLET|EPOLLERR|EPOLLHUP;
     while (1) {
-        n = epoll_wait (efd, events, MAXEVENTS, -1);
+        int n,i;
+        n = epoll_wait (efd, events, 64, -1);
         for (i = 0; i < n; i++) {
             if (events[i].events & EPOLLERR) {
                 printf("fd = %d, catch EPOLLERR");
@@ -83,7 +84,8 @@ int main() {
             }
             if (events[i].data.fd == socket_fd) {
                 while (1) {
-                    infd = accept (sfd, NULL, NULL);
+                    int infd;
+                    infd = accept (socket_fd, NULL, NULL);
                     if (infd == -1)
                     {
                         if ((errno == EAGAIN) || (errno == EWOULDBLOCK))
@@ -100,31 +102,31 @@ int main() {
                     }
                     event.data.fd = infd;
                     event.events = EPOLLIN|EPOLLERR|EPOLLHUP;
+                    int s;
                     s = epoll_ctl (efd, EPOLL_CTL_ADD, infd, &event);
                     if (s == -1) {
                         perror ("epoll_ctl");
                         abort ();
                     }
                 }
-            }
-
-        } else {
-            int count = 0;
-            char buf[1024];
-            count = read (events[i].data.fd, buf, 1024);
-            if (count == -1) {
-                if (errno != EAGAIN) {
-                    perror ("read");
-                    printf ("Closed connection on descriptor %d,errno=%d errmsg=%s\n",
-                            events[i].data.fd,errno,strerror(errno));
+            } else {
+                int count = 0;
+                char buf[1024];
+                count = read (events[i].data.fd, buf, 1024);
+                if (count == -1) {
+                    if (errno != EAGAIN) {
+                        perror ("read");
+                        printf ("Closed connection on descriptor %d,errno=%d errmsg=%s\n",
+                                events[i].data.fd,errno,strerror(errno));
+                        close (events[i].data.fd);
+                    }
+                } else if (count == 0) {
+                    printf ("Closed connection on descriptor %d due to read count=0\n",
+                            events[i].data.fd);
                     close (events[i].data.fd);
                 }
-            } else if (count == 0) {
-                printf ("Closed connection on descriptor %d due to read count=0\n",
-                        events[i].data.fd);
-                close (events[i].data.fd);
+                printf("recv from client fd=%d,msg=%s",events[i].data.fd, buf);
             }
-            printf("recv from client fd=%d,msg=%s",events[i].data.fd, buf);
         }
     }
 }
