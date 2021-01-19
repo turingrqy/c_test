@@ -124,6 +124,7 @@ int main() {
                         perror ("epoll_ctl");
                         abort ();
                     }
+                    break;
                 }
             } else {
                 int count = 0;
