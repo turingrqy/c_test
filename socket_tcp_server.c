@@ -96,11 +96,13 @@ int main() {
                 continue;
             }
             if (events[i].data.fd == socket_fd) {
+                printf("listenfd has coming\n")
                 while (1) {
                     int infd;
                     infd = accept (socket_fd, NULL, NULL);
                     if (infd == -1)
                     {
+                        printf("accept error:%s(errno:%d)\n",strerror(errno),errno);
                         if ((errno == EAGAIN) || (errno == EWOULDBLOCK))
                         {
                             break;
