@@ -66,7 +66,11 @@ int main() {
     while (1) {
         int n,i;
         n = epoll_wait (efd, events, 64, -1);
-        printf("epoll_wait n=%d\n",n)
+        printf("epoll_wait n=%d\n",n);
+        if (n < 0) {
+            printf("epoll_wait error:%s(errno:%d)\n",strerror(errno),errno);
+            exit(0);
+        }
         for (i = 0; i < n; i++) {
             if (events[i].events & EPOLLERR) {
                 printf("fd = %d, catch EPOLLERR");
