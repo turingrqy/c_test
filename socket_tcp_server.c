@@ -60,9 +60,17 @@ int main() {
         exit(0);
 
     }
+    efd = epoll_create1 (0);
     events = calloc (64, sizeof event);
     event.data.fd = socket_fd;
     event.events = EPOLLIN|EPOLLET|EPOLLERR|EPOLLHUP;
+    int res = epoll_ctl (efd, EPOLL_CTL_ADD, socket_fd, &event);
+    if (res == -1)
+    {
+        printf("epoll_ctl error:%s(errno:%d)\n",strerror(errno),errno);
+        perror ("epoll_ctl");
+        abort ();
+    }
     while (1) {
         int n,i;
         n = epoll_wait (efd, events, 64, -1);
