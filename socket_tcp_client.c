@@ -34,6 +34,7 @@ int main() {
         int count;
         char buf[20] = "hello from client!!!";
         count = write(socket_fd,buf,20);
+        printf("send to server count=%d\n",count);
         if (count < 0) {
             perror ("read");
             printf ("Closed connection on descriptor %d,errno=%d errmsg=%s\n",
