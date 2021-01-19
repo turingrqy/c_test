@@ -96,7 +96,7 @@ int main() {
                 continue;
             }
             if (events[i].data.fd == socket_fd) {
-                printf("listenfd has coming\n")
+                printf("listenfd has coming\n");
                 while (1) {
                     int infd;
                     infd = accept (socket_fd, NULL, NULL);
