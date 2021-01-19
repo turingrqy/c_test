@@ -10,6 +10,28 @@
 #include <fcntl.h>
 #define DEFAULT_PORT 8888
 
+int make_socket_non_blocking (int sfd)
+{
+    int flags, s;
+
+    flags = fcntl (sfd, F_GETFL, 0);
+    if (flags == -1)
+    {
+        perror ("fcntl");
+        return -1;
+    }
+
+    flags |= O_NONBLOCK;
+    s = fcntl (sfd, F_SETFL, flags);
+    if (s == -1)
+    {
+        perror ("fcntl");
+        return -1;
+    }
+
+    return 0;
+}
+
 int main() {
     int socket_fd;
     struct sockaddr_in servaddr;
@@ -24,12 +46,13 @@ int main() {
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr=inet_addr("10.227.8.96");//IP地址设置成INADDR_ANY,让系统自动获取本机的IP地址
     servaddr.sin_port=htons(DEFAULT_PORT);
+
     if(connect(socket_fd, (struct sockaddr*)&servaddr, sizeof(servaddr)) < 0)
     {
         perror("connect");
         return -2;
     }
-
+    make_socket_non_blocking(socket_fd);
     while (1) {
         int count;
         char buf[20] = "hello from client!!!";
