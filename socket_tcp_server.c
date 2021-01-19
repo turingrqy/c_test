@@ -96,13 +96,14 @@ int main() {
                             break;
                         }
                     }
+                    int s;
                     s = make_socket_non_blocking(infd);
                     if (s == -1) {
                         abort();
                     }
                     event.data.fd = infd;
                     event.events = EPOLLIN|EPOLLERR|EPOLLHUP;
-                    int s;
+
                     s = epoll_ctl (efd, EPOLL_CTL_ADD, infd, &event);
                     if (s == -1) {
                         perror ("epoll_ctl");
