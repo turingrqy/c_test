@@ -85,12 +85,14 @@ int main() {
     event1.data.fd = socket_fd1;
     event1.events = EPOLLIN|EPOLLET|EPOLLERR|EPOLLHUP;
     int res = epoll_ctl (efd, EPOLL_CTL_ADD, socket_fd, &event);
+    printf("add fd=%d to epoll res=%d", socket_fd,res);
     if (res == -1)
     {
         printf("epoll_ctl error:%s(errno:%d)\n",strerror(errno),errno);
 
     }
     res = epoll_ctl (efd, EPOLL_CTL_ADD, socket_fd1, &event1);
+    printf("add fd=%d to epoll res=%d", socket_fd1,res);
     if (res == -1)
     {
         printf("epoll_ctl error:%s(errno:%d)\n",strerror(errno),errno);
@@ -108,9 +110,10 @@ int main() {
                 close (socket_fd);
     }
 
-
+        printf("before epoll_wait error:%s(errno:%d)\n",strerror(errno),errno);
         int n;
         n = epoll_wait (efd, events, 64, -1);
+        printf("n in wait\n");
         if (n < 0) {
             printf("epoll_wait error:%s(errno:%d)\n",strerror(errno),errno);
 
