@@ -76,7 +76,26 @@ int main() {
     //count = write(socket_fd,buf,20);
     //printf("send to server count=%d\n",count);
 
+    struct epoll_event event,event1;
+    struct epoll_event *events;
+    int efd;
+    efd = epoll_create1 (0);
+    event.data.fd = socket_fd;
+    event.events = EPOLLIN|EPOLLET|EPOLLERR|EPOLLHUP;
+    event1.data.fd = socket_fd1;
+    event1.events = EPOLLIN|EPOLLET|EPOLLERR|EPOLLHUP;
+    int res = epoll_ctl (efd, EPOLL_CTL_ADD, socket_fd, &event);
+    if (res == -1)
+    {
+        printf("epoll_ctl error:%s(errno:%d)\n",strerror(errno),errno);
 
+    }
+    res = epoll_ctl (efd, EPOLL_CTL_ADD, socket_fd1, &event1);
+    if (res == -1)
+    {
+        printf("epoll_ctl error:%s(errno:%d)\n",strerror(errno),errno);
+
+    }
 
     int count;
     char buf[1400] = {0};
@@ -89,26 +108,7 @@ int main() {
                 close (socket_fd);
     }
 
-        struct epoll_event event,event1;
-        struct epoll_event *events;
-        int efd;
-        efd = epoll_create1 (0);
-        event.data.fd = socket_fd;
-        event.events = EPOLLIN|EPOLLET|EPOLLERR|EPOLLHUP;
-        event.data.fd = socket_fd1;
-        event.events = EPOLLIN|EPOLLET|EPOLLERR|EPOLLHUP;
-        int res = epoll_ctl (efd, EPOLL_CTL_ADD, socket_fd, &event);
-        if (res == -1)
-        {
-            printf("epoll_ctl error:%s(errno:%d)\n",strerror(errno),errno);
 
-        }
-    res = epoll_ctl (efd, EPOLL_CTL_ADD, socket_fd1, &event1);
-    if (res == -1)
-    {
-        printf("epoll_ctl error:%s(errno:%d)\n",strerror(errno),errno);
-
-    }
         int n;
         n = epoll_wait (efd, events, 64, -1);
         if (n < 0) {
@@ -116,15 +116,15 @@ int main() {
 
         }
         if (events[0].events & EPOLLERR) {
-            printf("fd = %d, catch EPOLLERR");
+            printf("fd = %d, catch EPOLLERR",events[0].data.fd);
 
         }
         if (events[0].events & EPOLLHUP) {
-            printf("fd = %d, catch EPOLLHUP");
+            printf("fd = %d, catch EPOLLHUP",events[0].data.fd);
 
         }
         if (!(events[0].events & EPOLLIN)) {
-            printf("fd = %d, catch event not EPOLLIN event=%d",events[0].events);
+            printf("fd = %d, catch event not EPOLLIN event=%d",events[0].data.fd,events[0].events);
 
         }
         close(socket_fd);
