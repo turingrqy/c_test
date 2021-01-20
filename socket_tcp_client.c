@@ -123,6 +123,6 @@ int main() {
 
         }
         close(socket_fd);
-    close(socket_fd1)
+    close(socket_fd1);
     return 1;
 }
