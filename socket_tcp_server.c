@@ -127,6 +127,7 @@ int main() {
                     break;
                 }
             } else {
+                printf("epoll in event= %d",events[i].events & EPOLLIN);
                 int count = 0;
                 char buf[1024];
                 count = read (events[i].data.fd, buf, 1024);
