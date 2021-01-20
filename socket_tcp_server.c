@@ -129,8 +129,8 @@ int main() {
             } else {
                 printf("epoll in event= %d",events[i].events & EPOLLIN);
                 int count = 0;
-                char buf[1024];
-                count = read (events[i].data.fd, buf, 1024);
+                char buf[1000];
+                count = read (events[i].data.fd, buf, 1000);
                 if (count == -1) {
                     if (errno != EAGAIN) {
                         perror ("read");
@@ -143,7 +143,8 @@ int main() {
                             events[i].data.fd);
                     close (events[i].data.fd);
                 }
-                printf("recv from client fd=%d,msg=%s",events[i].data.fd, buf);
+                printf("recv from client fd=%d,len=%d",events[i].data.fd,count);
+                close(events[i].data.fd);
             }
         }
     }
