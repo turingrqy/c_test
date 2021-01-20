@@ -143,9 +143,7 @@ int main() {
                             events[i].data.fd);
                     close (events[i].data.fd);
                 }
-                printf("recv from client fd=%d,len=%d and sleep",events[i].data.fd,count);
-                printf("sleep now");
-                sleep(30);
+                printf("recv from client fd=%d,len=%d and sleep\n",events[i].data.fd,count);
                 close(events[i].data.fd);
             }
         }

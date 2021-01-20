@@ -126,18 +126,17 @@ int main() {
 
 
             if (events[i].events & EPOLLERR) {
-                printf("fd = %d, catch EPOLLERR",events[0].data.fd);
+                printf("fd = %d, catch EPOLLERR\n",events[i].data.fd);
 
             }
             if (events[i].events & EPOLLHUP) {
-                printf("fd = %d, catch EPOLLHUP",events[0].data.fd);
+                printf("fd = %d, catch EPOLLHUP\n",events[i].data.fd);
 
             }
-            if (!(events[i].events & EPOLLIN)) {
-                printf("fd = %d, catch event not EPOLLIN event=%d",events[0].data.fd,events[0].events);
+            printf("fd = %d, catch event not EPOLLIN event=%d\n",events[i].data.fd,events[i].events);
 
-            }
             close(events[i].data.fd);
+            printf("fd = %d, closed\n",events[i].data.fd);
         }
         sync();
     }
