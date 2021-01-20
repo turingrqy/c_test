@@ -101,7 +101,7 @@ int main() {
         return 1;
     }
     if (!(events[0].events & EPOLLIN)) {
-        printf("fd = %d, catch event not EPOLLIN event=%d",events[i].events);
+        printf("fd = %d, catch event not EPOLLIN event=%d",events[0].events);
         close (events[0].data.fd);
         return 1;
     }
