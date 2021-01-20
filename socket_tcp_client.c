@@ -62,13 +62,14 @@ int main() {
     //count = write(socket_fd,buf,20);
     //printf("send to server count=%d\n",count);
 
-    pid_t pid;
-    pid = fork();
-    if (pid == 0) {
-        while (1) {
+    //pid_t pid;
+    //pid = fork();
+    //if (pid == 0) {
+        //while (1) {
             int count;
             char buf[20] = "hello from client!!!";
             count = write(socket_fd,buf,20);
+            fsync(socket_fd);
             printf("send to server count=%d\n",count);
             if (count < 0) {
                 perror ("read");
@@ -76,9 +77,20 @@ int main() {
                         socket_fd,errno,strerror(errno));
                 close (socket_fd);
             }
-            sleep(3);
+            //sleep(3);
+        //}
+    //} else {
+        printf("start sleep \n",count);
+        sleep(30);
+        count = write(socket_fd,buf,20);
+        fsync(socket_fd);
+        printf("send to server count=%d\n",count);
+        if (count < 0) {
+            perror ("read");
+            printf ("Closed connection on descriptor %d,errno=%d errmsg=%s\n",
+                socket_fd,errno,strerror(errno));
+            close (socket_fd);
         }
-    } else {
         struct epoll_event event;
         struct epoll_event *events;
         int efd;
@@ -113,5 +125,5 @@ int main() {
             close (events[0].data.fd);
             return 1;
         }
-    }
+    //}
 }
