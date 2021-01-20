@@ -42,6 +42,11 @@ int main() {
         printf("create socket error:%s(errno :%d)\n",strerror(errno),errno);
         exit(0);
     }
+    if((socket_fd1=socket(AF_INET,SOCK_STREAM,0))==-1)
+    {
+        printf("create socket error:%s(errno :%d)\n",strerror(errno),errno);
+        exit(0);
+    }
 
     memset(&servaddr,0,sizeof(servaddr));
     servaddr.sin_family = AF_INET;
