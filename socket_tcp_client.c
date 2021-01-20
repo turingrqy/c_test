@@ -84,24 +84,25 @@ int main() {
         perror ("epoll_ctl");
         abort ();
     }
+    int n;
     n = epoll_wait (efd, events, 64, -1);
     if (n < 0) {
         printf("epoll_wait error:%s(errno:%d)\n",strerror(errno),errno);
         exit(0);
     }
-    if (events[i].events & EPOLLERR) {
+    if (events[0].events & EPOLLERR) {
         printf("fd = %d, catch EPOLLERR");
         close (events[i].data.fd);
-        return;
+        return 1;
     }
-    if (events[i].events & EPOLLHUP) {
+    if (events[0].events & EPOLLHUP) {
         printf("fd = %d, catch EPOLLHUP");
         close (events[i].data.fd);
-        return;
+        return 1;
     }
-    if (!(events[i].events & EPOLLIN)) {
+    if (!(events[0].events & EPOLLIN)) {
         printf("fd = %d, catch event not EPOLLIN event=%d",events[i].events);
         close (events[i].data.fd);
-        return;
+        return 1;
     }
 }
