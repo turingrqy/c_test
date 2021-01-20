@@ -80,8 +80,46 @@ int main() {
             //sleep(3);
         //}
     //} else {
-        printf("start sleep \n",count);
-        sleep(30);
+    printf("start sleep \n",count);
+    sleep(30);
+    struct epoll_event event;
+    struct epoll_event *events;
+    int efd;
+    efd = epoll_create1 (0);
+    event.data.fd = socket_fd;
+    event.events = EPOLLIN|EPOLLET|EPOLLERR|EPOLLHUP;
+    int res = epoll_ctl (efd, EPOLL_CTL_ADD, socket_fd, &event);
+    if (res == -1)
+    {
+        printf("epoll_ctl error:%s(errno:%d)\n",strerror(errno),errno);
+        perror ("epoll_ctl");
+        abort ();
+    }
+    int n;
+    n = epoll_wait (efd, events, 64, -1);
+    if (n < 0) {
+        printf("epoll_wait error:%s(errno:%d)\n",strerror(errno),errno);
+        exit(0);
+    }
+    if (events[0].events & EPOLLERR) {
+        printf("fd = %d, catch EPOLLERR");
+        close (events[0].data.fd);
+        return 1;
+    }
+    if (events[0].events & EPOLLHUP) {
+        printf("fd = %d, catch EPOLLHUP");
+        close (events[0].data.fd);
+        return 1;
+    }
+    if (!(events[0].events & EPOLLIN)) {
+        printf("fd = %d, catch event not EPOLLIN event=%d",events[0].events);
+        close (events[0].data.fd);
+        return 1;
+    }
+
+
+
+
         count = write(socket_fd,buf,20);
         fsync(socket_fd);
         printf("send to server count=%d\n",count);
@@ -91,13 +129,8 @@ int main() {
                 socket_fd,errno,strerror(errno));
             close (socket_fd);
         }
-        struct epoll_event event;
-        struct epoll_event *events;
-        int efd;
-        efd = epoll_create1 (0);
-        event.data.fd = socket_fd;
-        event.events = EPOLLIN|EPOLLET|EPOLLERR|EPOLLHUP;
-        int res = epoll_ctl (efd, EPOLL_CTL_ADD, socket_fd, &event);
+
+        res = epoll_ctl (efd, EPOLL_CTL_ADD, socket_fd, &event);
         if (res == -1)
         {
             printf("epoll_ctl error:%s(errno:%d)\n",strerror(errno),errno);
