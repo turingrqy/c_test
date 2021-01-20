@@ -57,55 +57,61 @@ int main() {
         return -2;
     }
     make_socket_non_blocking(socket_fd);
-    int count;
-    char buf[20] = "hello from client!!!";
-    count = write(socket_fd,buf,20);
-    printf("send to server count=%d\n",count);
-    /*while (1) {
-        int count;
-        char buf[20] = "hello from client!!!";
-        count = write(socket_fd,buf,20);
-        printf("send to server count=%d\n",count);
-        if (count < 0) {
-            perror ("read");
-            printf ("Closed connection on descriptor %d,errno=%d errmsg=%s\n",
-                    socket_fd,errno,strerror(errno));
-            close (socket_fd);
+    //int count;
+    //char buf[20] = "hello from client!!!";
+    //count = write(socket_fd,buf,20);
+    //printf("send to server count=%d\n",count);
+
+    pid_t pid;
+    pid = fork();
+    if (pid == 0) {
+        while (1) {
+            int count;
+            char buf[20] = "hello from client!!!";
+            count = write(socket_fd,buf,20);
+            printf("send to server count=%d\n",count);
+            if (count < 0) {
+                perror ("read");
+                printf ("Closed connection on descriptor %d,errno=%d errmsg=%s\n",
+                        socket_fd,errno,strerror(errno));
+                close (socket_fd);
+            }
+            sleep(3);
         }
-        sleep(3);
-    }*/
-    struct epoll_event event;
-    struct epoll_event *events;
-    int efd;
-    efd = epoll_create1 (0);
-    event.data.fd = socket_fd;
-    event.events = EPOLLIN|EPOLLET|EPOLLERR|EPOLLHUP;
-    int res = epoll_ctl (efd, EPOLL_CTL_ADD, socket_fd, &event);
-    if (res == -1)
-    {
-        printf("epoll_ctl error:%s(errno:%d)\n",strerror(errno),errno);
-        perror ("epoll_ctl");
-        abort ();
-    }
-    int n;
-    n = epoll_wait (efd, events, 64, -1);
-    if (n < 0) {
-        printf("epoll_wait error:%s(errno:%d)\n",strerror(errno),errno);
-        exit(0);
-    }
-    if (events[0].events & EPOLLERR) {
-        printf("fd = %d, catch EPOLLERR");
-        close (events[0].data.fd);
-        return 1;
-    }
-    if (events[0].events & EPOLLHUP) {
-        printf("fd = %d, catch EPOLLHUP");
-        close (events[0].data.fd);
-        return 1;
-    }
-    if (!(events[0].events & EPOLLIN)) {
-        printf("fd = %d, catch event not EPOLLIN event=%d",events[0].events);
-        close (events[0].data.fd);
-        return 1;
+    } else {
+        struct epoll_event event;
+        struct epoll_event *events;
+        int efd;
+        efd = epoll_create1 (0);
+        event.data.fd = socket_fd;
+        event.events = EPOLLIN|EPOLLET|EPOLLERR|EPOLLHUP;
+        int res = epoll_ctl (efd, EPOLL_CTL_ADD, socket_fd, &event);
+        if (res == -1)
+        {
+            printf("epoll_ctl error:%s(errno:%d)\n",strerror(errno),errno);
+            perror ("epoll_ctl");
+            abort ();
+        }
+        int n;
+        n = epoll_wait (efd, events, 64, -1);
+        if (n < 0) {
+            printf("epoll_wait error:%s(errno:%d)\n",strerror(errno),errno);
+            exit(0);
+        }
+        if (events[0].events & EPOLLERR) {
+            printf("fd = %d, catch EPOLLERR");
+            close (events[0].data.fd);
+            return 1;
+        }
+        if (events[0].events & EPOLLHUP) {
+            printf("fd = %d, catch EPOLLHUP");
+            close (events[0].data.fd);
+            return 1;
+        }
+        if (!(events[0].events & EPOLLIN)) {
+            printf("fd = %d, catch event not EPOLLIN event=%d",events[0].events);
+            close (events[0].data.fd);
+            return 1;
+        }
     }
 }
