@@ -79,6 +79,7 @@ int main() {
     struct epoll_event event,event1;
     struct epoll_event *events;
     int efd;
+    events = calloc (64, sizeof event);
     efd = epoll_create1 (0);
     event.data.fd = socket_fd;
     event.events = EPOLLIN|EPOLLET|EPOLLERR|EPOLLHUP;
@@ -111,26 +112,35 @@ int main() {
     }
 
         printf("before epoll_wait error:%s(errno:%d)\n",strerror(errno),errno);
+
         int n;
+    while (1) {
         n = epoll_wait (efd, events, 64, -1);
-        printf("n in wait\n");
+        printf("n:%d in wait\n",n);
         if (n < 0) {
             printf("epoll_wait error:%s(errno:%d)\n",strerror(errno),errno);
-
+            exit(0);
         }
-        if (events[0].events & EPOLLERR) {
-            printf("fd = %d, catch EPOLLERR",events[0].data.fd);
+        int i;
+        for (i=0;i<n;i++) {
 
-        }
-        if (events[0].events & EPOLLHUP) {
-            printf("fd = %d, catch EPOLLHUP",events[0].data.fd);
 
-        }
-        if (!(events[0].events & EPOLLIN)) {
-            printf("fd = %d, catch event not EPOLLIN event=%d",events[0].data.fd,events[0].events);
+            if (events[i].events & EPOLLERR) {
+                printf("fd = %d, catch EPOLLERR",events[0].data.fd);
 
+            }
+            if (events[i].events & EPOLLHUP) {
+                printf("fd = %d, catch EPOLLHUP",events[0].data.fd);
+
+            }
+            if (!(events[i].events & EPOLLIN)) {
+                printf("fd = %d, catch event not EPOLLIN event=%d",events[0].data.fd,events[0].events);
+
+            }
+            close(events[i].data.fd);
         }
-        close(socket_fd);
-    close(socket_fd1);
+        sync();
+    }
+
     return 1;
 }
