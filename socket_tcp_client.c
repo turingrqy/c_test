@@ -47,9 +47,12 @@ int main() {
     servaddr.sin_family = AF_INET;
     servaddr.sin_addr.s_addr=inet_addr("10.227.8.96");//IP地址设置成INADDR_ANY,让系统自动获取本机的IP地址
     servaddr.sin_port=htons(DEFAULT_PORT);
-
-    if(connect(socket_fd, (struct sockaddr*)&servaddr, sizeof(servaddr)) < 0)
+    int connectRes
+    connectRes = connect(socket_fd, (struct sockaddr*)&servaddr, sizeof(servaddr))
+    printf("connect res=%d",connectRes)
+    if( connectRes< 0)
     {
+
         perror("connect");
         return -2;
     }
