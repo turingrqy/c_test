@@ -8,7 +8,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <fcntl.h>
-#include <sys/epoll.h>
+//#include <sys/epoll.h>
 #define DEFAULT_PORT 8888
 
 int make_socket_non_blocking (int sfd)
@@ -42,11 +42,11 @@ int main() {
         printf("create socket error:%s(errno :%d)\n",strerror(errno),errno);
         exit(0);
     }
-    if((socket_fd1=socket(AF_INET,SOCK_STREAM,0))==-1)
+    /*if((socket_fd1=socket(AF_INET,SOCK_STREAM,0))==-1)
     {
         printf("create socket error:%s(errno :%d)\n",strerror(errno),errno);
         exit(0);
-    }
+    }*/
 
     memset(&servaddr,0,sizeof(servaddr));
     servaddr.sin_family = AF_INET;
@@ -61,21 +61,28 @@ int main() {
         perror("connect");
         return -2;
     }
-    connectRes = connect(socket_fd1, (struct sockaddr*)&servaddr, sizeof(servaddr));
+
+    while (1) {
+        char buf[1400] = {0};
+        count = write(socket_fd,buf,1400);
+        printf("send to server count=%d\n",count);
+        sleep(1);
+    }
+    /*connectRes = connect(socket_fd1, (struct sockaddr*)&servaddr, sizeof(servaddr));
     printf("connect res=%d",connectRes);
     if( connectRes< 0)
     {
 
         perror("connect");
         return -2;
-    }
-    make_socket_non_blocking(socket_fd);
-    make_socket_non_blocking(socket_fd1);
+    }*/
+    //make_socket_non_blocking(socket_fd);
+    //make_socket_non_blocking(socket_fd1);
     //int count;
     //char buf[20] = "hello from client!!!";
     //count = write(socket_fd,buf,20);
     //printf("send to server count=%d\n",count);
-
+/*
     struct epoll_event event,event1;
     struct epoll_event *events;
     int efd;
@@ -139,7 +146,7 @@ int main() {
             printf("fd = %d, closed\n",events[i].data.fd);
         }
         sync();
-    }
+    }*/
 
     return 1;
 }

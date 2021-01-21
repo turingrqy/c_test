@@ -120,13 +120,17 @@ int main() {
                     event.events = EPOLLIN|EPOLLERR|EPOLLHUP;
 
                     s = epoll_ctl (efd, EPOLL_CTL_ADD, infd, &event);
+
                     if (s == -1) {
                         perror ("epoll_ctl");
                         abort ();
                     }
+                    sleep(30);
                     break;
                 }
+
             } else {
+
                 printf("epoll in event= %d",events[i].events & EPOLLIN);
                 int count = 0;
                 char buf[1000];
@@ -144,7 +148,6 @@ int main() {
                     close (events[i].data.fd);
                 }
                 printf("recv from client fd=%d,len=%d and sleep\n",events[i].data.fd,count);
-                close(events[i].data.fd);
             }
         }
     }
