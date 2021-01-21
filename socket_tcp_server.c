@@ -134,7 +134,7 @@ int main() {
 
                 printf("epoll in event= %d",events[i].events & EPOLLIN);
                 int count = 0;
-                char buf[1000];
+                char buf[500];
                 count = read (events[i].data.fd, buf, 1000);
                 if (count == -1) {
                     if (errno != EAGAIN) {
@@ -149,6 +149,7 @@ int main() {
                     close (events[i].data.fd);
                 }
                 printf("recv from client fd=%d,len=%d and sleep\n",events[i].data.fd,count);
+                sleep(2);
             }
         }
     }
