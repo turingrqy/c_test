@@ -135,7 +135,7 @@ int main() {
                 printf("epoll in event= %d",events[i].events & EPOLLIN);
                 int count = 0;
                 char buf[500];
-                count = read (events[i].data.fd, buf, 1000);
+                count = read (events[i].data.fd, buf, 500);
                 if (count == -1) {
                     if (errno != EAGAIN) {
                         perror ("read");
