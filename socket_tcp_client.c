@@ -61,9 +61,9 @@ int main() {
         perror("connect");
         return -2;
     }
-
+    char buf[1400] = {0};
+    int count;
     while (1) {
-        char buf[1400] = {0};
         count = write(socket_fd,buf,1400);
         printf("send to server count=%d\n",count);
         sleep(1);

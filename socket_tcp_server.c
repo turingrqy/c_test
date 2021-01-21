@@ -38,6 +38,7 @@ int main() {
     int efd;
     struct epoll_event event;
     struct epoll_event *events;
+    int nRcvBufferLen = 8*1024;
     if((socket_fd=socket(AF_INET,SOCK_STREAM,0))==-1)
     {
         printf("create socket error:%s(errno :%d)\n",strerror(errno),errno);
@@ -53,6 +54,7 @@ int main() {
         printf("bind socket error:%s(errno:%d)\n",strerror(errno),errno);
         exit(0);
     }
+    setsockopt(socket, SOL_SOCKET, SO_RCVBUF, (char*)&nRcvBufferLen, sizeof(int));
     //开始监听是否有客户端连接，第二个参数是最大监听数
     if(listen(socket_fd,10)==-1)
     {
@@ -125,7 +127,6 @@ int main() {
                         perror ("epoll_ctl");
                         abort ();
                     }
-                    sleep(30);
                     break;
                 }
 
