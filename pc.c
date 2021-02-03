@@ -14,18 +14,19 @@
 
 int main() {
     pid_t pid;
-    char buf[10] = {'a'};
-    char **a = &buf;
+    //char buf[10] = {'a'};
+    //char **a = &buf;
     pid = fork();
     if (pid == 0) {
-        *a = "bbbbbbbbbb";
-        printf("child str=%s\n",*a);
-        printf("child 指针（地址）的值为：OX%p\n",*a);
+        printf("child start\n");
+        //*a = "bbbbbbbbbb";
+        //printf("child str=%s\n",*a);
+        //printf("child 指针（地址）的值为：OX%p\n",*a);
     } else {
         printf("main start\n");
         wait(NULL);
-        printf("main str=%s\n",*a);
-        printf("child 指针（地址）的值为：OX%p\n",*a);
+        //printf("main str=%s\n",*a);
+        //printf("child 指针（地址）的值为：OX%p\n",*a);
     }
     return 0;
 }
