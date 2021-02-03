@@ -1,4 +1,3 @@
-#define _GNU_SOURCE
 #include <unistd.h>
 #include <string.h>
 #include <stdlib.h>
@@ -12,8 +11,13 @@
 #include <linux/futex.h>    //for FUTEX_WAIT FUTEX_WAKE
 #include <sys/time.h>       //for struct timespec
 #include <sys/syscall.h>    //for SYS_futex
+#define error_handle(msg) do{perror(msg); exit(EXIT_FAILURE);} while(0)
 
-
+int futex(int* uaddr, int futex_op, int val, const struct timespec *timeout,
+          int *uaddr2, int val3)
+{
+    return syscall(SYS_futex, uaddr, futex_op, val, timeout, uaddr2, val3);
+}
 void futex_wait(int *futexp)
 {
     while(1) {
