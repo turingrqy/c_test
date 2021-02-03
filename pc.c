@@ -22,6 +22,7 @@ int main() {
         printf("child str=%s\n",*a);
         printf("child 指针（地址）的值为：OX%p\n",*a);
     } else {
+        printf("main start\n");
         wait(NULL);
         printf("main str=%s\n",*a);
         printf("child 指针（地址）的值为：OX%p\n",*a);
