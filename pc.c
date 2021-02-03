@@ -20,10 +20,12 @@ int main() {
         printf("child start\n");
         a = 12;
         printf("child int=%d\n",a);
+        printf("指针（地址）的值为：OX%p\n",&a);
     } else {
         printf("main start\n");
         wait(NULL);
         printf("main int=%d\n",a);
+        printf("指针（地址）的值为：OX%p\n",&a);
     }
     return 0;
 }
