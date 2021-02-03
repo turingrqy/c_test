@@ -63,6 +63,7 @@ int main() {
             printf("child in\n");
             *testNumber =*testNumber + 1;
             futex_post(futex);
+            sleep(1);
             printf("child out\n");
         };
 
@@ -73,6 +74,7 @@ int main() {
             printf("main in\n");
             *testNumber =*testNumber + 1;
             futex_post(futex);
+            sleep(1);
             printf("main out\n");
         };
         wait(NULL);
