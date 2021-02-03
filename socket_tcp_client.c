@@ -63,11 +63,17 @@ int main() {
     }
     char buf[1400] = {0};
     int count;
+    int times;
     while (1) {
         count = write(socket_fd,buf,1400);
         printf("send to server count=%d\n",count);
         sleep(1);
+        times++;
+        if (times == 20) {
+            break;
+        }
     }
+    close(socket_fd);
     /*connectRes = connect(socket_fd1, (struct sockaddr*)&servaddr, sizeof(servaddr));
     printf("connect res=%d",connectRes);
     if( connectRes< 0)
