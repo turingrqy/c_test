@@ -53,5 +53,8 @@ int main() {
         sem_post(sem);
         printf("main out \n",i);
         wait(NULL);
+        sem_close(sem);
+        sem_unlink("name_sem");
     }
+
 }
